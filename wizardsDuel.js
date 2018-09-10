@@ -12,14 +12,20 @@ class PlayerWizard extends Sprite {
         this.x = 400;
         this.y = 552;
         this.speedWhenWalking = 200;
+        this.spellCastTime = 0;
+        
     }
     handleDownArrowKey() {
         this.speed = this.speedWhenWalking;
         this.angle = 270;
     }
     handleUpArrowKey() {
-        spell.x = this.x;
-        spell.y = this.y;
+        let now = game.getTime();
+        if(now - this.spellCastTime >= 2) {
+            this.spellCastTime = now;
+            spell.x = this.x;
+            spell.y = this.y - 48;
+        }
     }
     handleLeftArrowKey() {
         this.speed = this.speedWhenWalking;
@@ -45,6 +51,13 @@ class Spell extends Sprite {
         this.height = 48;
         this.width = 48;
     }
+    handleCollision(otherSprite) {
+        if (this.getImage() !== otherSprite.getImage()) {
+            game.removeSprite(this);
+            new Fireball(otherSprite);
+        }
+        return false;
+    }
     handleBoundryContact() {
         game.removeSprite(this);
     }
@@ -68,18 +81,51 @@ class NonPlayerWizard extends Sprite {
         this.speed = 150;
     }
     handleGameLoop() {
-        if(this.x <= 0) {
+        if (this.x <= 0) {
             //leftward motion has reached left corner, so turn right
             this.x = 0;
             this.angle = 0;
         }
-        if(this.x >= 750) {
+        if (this.x >= 750) {
             //Rightward motion has reached right corner, so turn left
             this.x = 750;
             this.angle = 180;
+        }
+        if(Math.random() <= 0.01) {
+        let birdSpell = new Spell();
+        birdSpell.x = this.x;
+        birdSpell.y = this.y + 70;
+        birdSpell.setImage("baseball.png");
+        birdSpell.angle = 270;
         }
     }
 }
 
 let stranger = new NonPlayerWizard();
 stranger.name = ("stranger");
+
+class Fireball extends Sprite {
+    constructor(deadSprite) {
+        super();
+        this.x = deadSprite.x;
+        this.y = deadSprite.y;
+        this.setImage("fireballSheet.png");
+        this.name = ("A ball of fire");
+        this.defineAnimation("explosion", 0, 6);
+        this.playAnimation("explosion");
+        game.removeSprite(deadSprite);
+
+    }
+    
+    handleAnimationEnd() {
+        game.removeSprite(this);
+
+        if (!game.isActiveSprite(marcus)) {
+            game.end("Andrew had his game ruined by pesky birds.\n\Better luck next time.");
+        }
+        if (!game.isActiveSprite(stranger)) {
+            game.end("Congrats!\n\nAndrew just hit a grand\nslam in the 8th to win the game!");
+        }
+    }
+
+}
