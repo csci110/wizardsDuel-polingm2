@@ -13,11 +13,6 @@ class PlayerWizard extends Sprite {
         this.y = 552;
         this.speedWhenWalking = 200;
         this.spellCastTime = 0;
-        
-    }
-    handleDownArrowKey() {
-        this.speed = this.speedWhenWalking;
-        this.angle = 270;
     }
     handleUpArrowKey() {
         let now = game.getTime();
@@ -36,11 +31,12 @@ class PlayerWizard extends Sprite {
         this.angle = 0;
     }
     handleGameLoop() { //keeps Marcus in display area
-        this.x = Math.max(0, this.x);
+        this.x = Math.max(5, this.x);
         this.x = Math.min(752, this.x);
         this.speed = 0;
     }
 }
+
 let marcus = new PlayerWizard();
 marcus.name = "marcus";
 
@@ -81,6 +77,9 @@ class NonPlayerWizard extends Sprite {
         this.speed = 150;
     }
     handleGameLoop() {
+        if(Math.random() <= 0.01){
+        }
+
         if (this.x <= 0) {
             //leftward motion has reached left corner, so turn right
             this.x = 0;
@@ -91,7 +90,7 @@ class NonPlayerWizard extends Sprite {
             this.x = 750;
             this.angle = 180;
         }
-        if(Math.random() <= 0.01) {
+        if(Math.random() <= 0.02) {
         let birdSpell = new Spell();
         birdSpell.x = this.x;
         birdSpell.y = this.y + 70;
